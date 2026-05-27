@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El Mito del Hombre Jaguar - Juego Interactivo</title>
+    <style>
+        :root {
+            --verde-selva: #132e15;
+            --verde-claro: #388e3c;
+            --marron-tierra: #4e342e;
+            --oro: #ffb300;
+            --blanco: #ffffff;
+            --azul-noche: #0a1f1d;
+        }
+
+        /* Fondo de selva nocturna a pantalla completa sin bordes */
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            min-height: 100vh;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Chalkboard SE', sans-serif;
+            /* Ilustración CSS: Una gran luna llena iluminando la selva profunda */
+            background-image: url('imagen9.png');
+            background-size: 100% auto;
+            background-attachment: fixed;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* Contenedor adaptado para resaltar sobre el fondo oscuro */
+        .contenedor-juego {
+            background-color: rgba(255, 255, 255, 0.96);
+            /* Un toque sutil de transparencia */
+            border: 6px solid var(--verde-selva);
+            border-radius: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(56, 142, 60, 0.1);
+            max-width: 750px;
+            width: 100%;
+            padding: 35px;
+            box-sizing: border-box;
+            text-align: center;
+            position: relative;
+        }
+
+        h1 {
+            color: #0f3d13;
+            font-size: 2.4rem;
+            margin-top: 0;
+            text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: var(--verde-claro);
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+
+        .texto-cuento {
+            font-size: 1.25rem;
+            line-height: 1.6;
+            text-align: justify;
+            background-color: #f1f8e9;
+            padding: 22px;
+            border-radius: 20px;
+            border-left: 8px solid var(--verde-claro);
+            margin-bottom: 20px;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .placeholder-imagen {
+            background: linear-gradient(135deg, #a5d6a7, #66bb6a);
+            border: 3px dashed #1b5e20;
+            border-radius: 20px;
+            padding: 55px 20px;
+            margin: 20px 0;
+            color: #1b5e20;
+            font-weight: bold;
+            font-size: 1.15rem;
+            text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.4);
+        }
+
+        .opciones-contenedor {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        /* Botones del juego */
+        button {
+            background-color: var(--verde-claro);
+            color: var(--blanco);
+            border: none;
+            border-radius: 15px;
+            padding: 16px 25px;
+            font-size: 1.25rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 5px 0 #1b5e20;
+            font-family: inherit;
+        }
+
+        button:hover {
+            background-color: #2e7d32;
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(3px);
+            box-shadow: 0 0px 0 #1b5e20;
+        }
+
+        /* Botones de respuesta */
+        button.btn-opcion {
+            background-color: var(--blanco);
+            color: var(--marron-tierra);
+            border: 3px solid var(--verde-claro);
+            box-shadow: 0 5px 0 var(--verde-claro);
+            text-align: left;
+        }
+
+        button.btn-opcion:hover {
+            background-color: #f1f8e9;
+            color: #1b5e20;
+        }
+
+        /* Botón Volver a Leer */
+        button.btn-leer {
+            background-color: #8d6e63;
+            box-shadow: 0 5px 0 #4e342e;
+            margin-top: 10px;
+            font-size: 1.05rem;
+            padding: 12px 24px;
+        }
+
+        button.btn-leer:hover {
+            background-color: #5d4037;
+        }
+
+        /* Capa de retroalimentación en pantalla completa dentro del contenedor */
+        .capa-retro {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.97);
+            border-radius: 24px;
+            z-index: 10;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            box-sizing: border-box;
+        }
+
+        .retro-contenido {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            font-weight: bold;
+            max-width: 80%;
+            line-height: 1.4;
+        }
+
+        .retro-buena {
+            color: #2e7d32;
+        }
+
+        .retro-mala {
+            color: #c62828;
+        }
+
+        .btn-retro {
+            padding: 14px 45px;
+            font-size: 1.2rem;
+        }
+
+        .btn-incorrecto {
+            background-color: #ef5350;
+            box-shadow: 0 5px 0 #b71c1c;
+        }
+
+        .btn-incorrecto:hover {
+            background-color: #d32f2f;
+        }
+
+        .insignia-pantalla {
+            font-size: 6.5rem;
+            margin: 20px 0;
+            animation: pop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .nombre-insignia {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: var(--oro);
+            margin-bottom: 25px;
+            text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
+        }
+
+        .pantalla {
+            display: none;
+        }
+
+        .activa {
+            display: block;
+        }
+
+        @keyframes pop {
+            0% {
+                transform: scale(0);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .sombra {
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 50);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="contenedor-juego">
+        <!-- CAPA DE RETROALIMENTACIÓN -->
+        <div id="capa-retro" class="capa-retro">
+            <div id="icono-retro" style="font-size: 4.5rem; margin-bottom: 10px;"></div>
+            <div id="texto-retro" class="retro-contenido"></div>
+            <button id="btn-accion-retro" class="btn-retro"></button>
+        </div>
+
+        <!-- PANTALLA INICIO -->
+        <div id="inicio" class="pantalla activa">
+            <h1>El Mito del Hombre Jaguar</h1>
+            <div>
+                <img src="imagen5.jpg" class="sombra" style="height: 450px;">
+            </div>
+            <p style="font-size: 1.35rem;">¡Lee con atención cada parte de la historia y supera los retos para ganar
+                insignias!</p>
+            <button onclick="irAPantalla('p1-texto')">¡Empezar aventura! <span style="font-size: 125%;">🐯</span></button>
+        </div>
+
+        <!-- TÍTULO 1: TEXTO -->
+        <div id="p1-texto" class="pantalla">
+            <h2>El Encuentro en la Selva</h2>
+            <div style="text-align: center; padding-bottom: 15px;">
+                <img src="texto1.png" style="width: 100%;">
+            </div>
+            <button onclick="irAPantalla('p1-q1')">¡Vamos a jugar! <span style="font-size: 125%;">🎮</span></button>
+        </div>
+
+        <!-- TÍTULO 1: PREGUNTA 1 -->
+        <div id="p1-q1" class="pantalla">
+            <h2>¿Qué habilidad especial tenía Yatú?</h2>
+            <div class="opciones-contenedor">
+                <button class="btn-opcion"
+                    onclick="mostrarRetro(false, '¡Casi! Yatú amaba mucho a la naturaleza y sus secretos...', 'p1-q1')">A)
+                    Podía volar como las aves.</button>
+                <button class="btn-opcion"
+                    onclick="mostrarRetro(true, '¡Excelente! Yatú entendía el viento y a los animales.', 'p1-q2')">B)
+                    Hablaba con los animales y curaba con plantas.</button>
+                <button class="btn-opcion"
+                    onclick="mostrarRetro(false, '¡Inténtalo de nuevo! Mira bien qué hacía con las plantas.', 'p1-q1')">C)
+                    Sabía construir casas de piedra.</button>
+            </div>
+            <button class="btn-leer" onclick="irAPantalla('p1-texto')">📖 Volver a leer</button>
+        </div>
+
+        <!-- TÍTULO 1: PREGUNTA 2 -->
+        <div id="p1-q2" class="pantalla">
+            <h2>¿Verdadero o Falso?</h2>
+            <p style="font-size: 1.4rem;">"Yatú salió corriendo asustado cuando vio al jaguar."</p>
+            <div class="opciones-contenedor">
+                <button class="btn-opcion"
+                    onclick="mostrarRetro(false, '¡Piénsalo bien! Yatú era un joven muy valiente...', 'p1-q2')">Verdadero</button>
+                <button class="btn-opcion"
+                    onclick="mostrarRetro(true, '¡Muy bien! Él decidió ayudar al animal herido.', 'p1-insignia')">Falso</button>
+            </div>
+            <button class="btn-leer" onclick="irAPantalla('p1-texto')">📖 Volver a leer</button>
+        </div>
+
+        <!-- TÍTULO 1: INSIGNIA -->
+        <div id="p1-insignia" class="pantalla">
+            <h2>¡Lo lograste!</h2>
+            <div class="insignia-pantalla">🏅</div>
+            <div class="nombre-insignia">Medalla del Corazón Valiente</div>
+            <button onclick="irAPantalla('p2-texto')">Siguiente parte de la historia</button>
+        </div>
+
+
+        <!-- TÍTULO 2: TEXTO -->
+        <div id="p2-texto" class="pantalla">
+            <h2>El Poder Sagrado</h2>
+            <div style="text-align: center; padding-bottom: 10px;">
+                <img src="texto2.png" style="width: 100%;">
+            </div>
+            <button onclick="irAPantalla('p2-q1')">¡Vamos a jugar! <span style="font-size: 125%;">🎮</span></button>
+        </div>
+
+        <!-- TÍTULO 2: PREGUNTA 1 -->
+        <div id="p2-q1" class="pantalla">
+            <h2>¿Para qué usaba Yatú su poder?</h2>
+            <div class="opciones-contenedor">
+                <button class="btn-opcion"
+                    onclick="mostrarRetro(false, '¡No! Yatú solo usaba su poder para ayudar.', 'p2-q1')">A) Para asustar
+                    a los niños por diversión.</button>
+                <button class="btn-opcion"
+                    onclick="mostrarRetro(true, '¡Perfecto! Él era el guardián de su gente y del bosque.', 'p2-q2')">B)
+                    Para defender al pueblo y a los bosques.</button>
+            </div>
+            <button class="btn-leer" onclick="irAPantalla('p2-texto')">📖 Volver a leer</button>
+        </div>
+
+        <!-- TÍTULO 2: PREGUNTA 2 -->
+        <div id="p2-q2" class="pantalla">
+            <h2>¿Verdadero o Falso?</h2>
+            <p style="font-size: 1.4rem;">"Los habitantes se sentían protegidos por el Hombre Jaguar."</p>
+            <div class="opciones-contenedor">
+                <button class="btn-opcion"
+                    onclick="mostrarRetro(true, '¡Exacto! Sabían que él vigilaba en la oscuridad.', 'p2-insignia')">Verdadero</button>
+                <button class="btn-opcion"
+                    onclick="mostrarRetro(false, '¡Recuerda! El pueblo contaba historias de sus rugidos...', 'p2-q2')">Falso</button>
+            </div>
+            <button class="btn-leer" onclick="irAPantalla('p2-texto')">📖 Volver a leer</button>
+        </div>
+
+        <!-- TÍTULO 2: INSIGNIA -->
+        <div id="p2-insignia" class="pantalla">
+            <h2>¡Qué buen trabajo!</h2>
+            <div class="insignia-pantalla">🛡️</div>
+            <div class="nombre-insignia">Escudo del Guardián de la Selva</div>
+            <button onclick="irAPantalla('p3-texto')">Siguiente parte de la historia</button>
+        </div>
+
+
+        <!-- TÍTULO 3: TEXTO -->
+        <div id="p3-texto" class="pantalla">
+            <h2>La Leyenda Eterna</h2>
+            <div style="text-align: center; padding-bottom: 10px;">
+                <img src="texto3.png" style="width: 100%;">
+            </div>
+            <button onclick="irAPantalla('p3-q1')">¡Vamos a jugar! <span style="font-size: 125%;">🎮</span></button>
+        </div>
+
+        <!-- TÍTULO 3: PREGUNTA 1 -->
+        <div id="p3-q1" class="pantalla">
+            <h2>¿Qué nos enseñan los mayores con esta historia?</h2>
+            <div class="opciones-contenedor">
+                <button class="btn-opcion"
+                    onclick="mostrarRetro(true, '¡Así es! Debemos ser amigos de la naturaleza.', 'p3-q2')">A) Que
+                    debemos respetar y cuidar la naturaleza.</button>
+                <button class="btn-opcion"
+                    onclick="mostrarRetro(false, '¡No es eso! El mito tiene un mensaje de amor a la tierra.', 'p3-q1')">B)
+                    Que los jaguares pueden vivir en las casas.</button>
+            </div>
+            <button class="btn-leer" onclick="irAPantalla('p3-texto')">📖 Volver a leer</button>
+        </div>
+
+        <!-- TÍTULO 3: PREGUNTA 2 -->
+        <div id="p3-q2" class="pantalla">
+            <h2>¿Verdadero o Falso?</h2>
+            <p style="font-size: 1.4rem;">"La leyenda dice que Yatú desapareció para siempre y ya no cuida la selva."
+            </p>
+            <div class="opciones-contenedor">
+                <button class="btn-opcion"
+                    onclick="mostrarRetro(false, '¡Mira bien! Dicen que su silueta aún se ve...', 'p3-q2')">Verdadero</button>
+                <button class="btn-opcion"
+                    onclick="mostrarRetro(true, '¡Correcto! Su espíritu sigue vigilando los bosques.', 'p3-insignia')">Falso</button>
+            </div>
+            <button class="btn-leer" onclick="irAPantalla('p3-texto')">📖 Volver a leer</button>
+        </div>
+
+        <!-- TÍTULO 3: INSIGNIA -->
+        <div id="p3-insignia" class="pantalla">
+            <h2>¡Eres un experto!</h2>
+            <div class="insignia-pantalla">👑</div>
+            <div class="nombre-insignia">Corona del Defensor de la Tierra</div>
+            <button onclick="irAPantalla('final')">Finalizar aventura</button>
+        </div>
+
+        <!-- PANTALLA FINAL -->
+        <div id="final" class="pantalla">
+            <h1>¡Felicidades, Guardián!</h1>
+            <div style="font-size: 5rem; margin: 20px 0;">🏆</div>
+            <p style="font-size: 1.35rem;">Has completado el Mito del Hombre Jaguar. ¡Ahora conoces la importancia de
+                proteger nuestro mundo!</p>
+            <button onclick="location.reload()">Volver a empezar</button>
+        </div>
+    </div>
+
+    <script>
+        function irAPantalla(id) {
+            document.querySelectorAll('.pantalla').forEach(p => p.classList.remove('activa'));
+            document.getElementById(id).classList.add('activa');
+            document.getElementById('capa-retro').style.display = 'none';
+        }
+
+        function mostrarRetro(esCorrecto, mensaje, destino) {
+            const capa = document.getElementById('capa-retro');
+            const texto = document.getElementById('texto-retro');
+            const btn = document.getElementById('btn-accion-retro');
+            const icono = document.getElementById('icono-retro');
+
+            capa.style.display = 'flex';
+            texto.innerText = mensaje;
+
+            if (esCorrecto) {
+                icono.innerText = "🤩";
+                texto.className = "retro-contenido retro-buena";
+                btn.innerText = "Continuar";
+                btn.className = "btn-retro";
+                btn.onclick = () => irAPantalla(destino);
+            } else {
+                icono.innerText = "🤯";
+                texto.className = "retro-contenido retro-mala";
+                btn.innerText = "Intentar de nuevo";
+                btn.className = "btn-retro btn-incorrecto";
+                btn.onclick = () => capa.style.display = 'none';
+            }
+        }
+
+        //irAPantalla('p3-texto');
+    </script>
+
+</body>
+
+</html>
